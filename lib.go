@@ -49,6 +49,7 @@ func Test() {
 	ticker := time.NewTicker(time.Millisecond * 500)
 	defer ticker.Stop()
 	counter := 0
+	left := 1
 
 	for {
 		select {
@@ -61,9 +62,16 @@ func Test() {
 
 			var message string
 			if counter == 0 {
-				message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*2*math.Pi) + `}`
+				// message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*2*math.Pi) + `}`
+				if left == 1 {
+					left = 0
+					message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*math.Pi+(math.Pi/2)) + `}`
+				} else {
+					left = 1
+					message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*math.Pi+(3*math.Pi/2)) + `}`
+				}
 			} else {
-				message = `{"e": "throttle", "data": ` + fmt.Sprint(float64(counter)*0.5) + `}`
+				message = `{"e": "throttle", "data": ` + fmt.Sprint(float64(counter)*0.7) + `}`
 			}
 			fmt.Println("Write: ", message)
 			err := c.WriteMessage(websocket.TextMessage, []byte(message))
@@ -71,7 +79,7 @@ func Test() {
 				log.Println("write:", err)
 				return
 			}
-			if counter == 3 {
+			if counter == 4 {
 				counter = 0
 			} else {
 				counter++

@@ -1,10 +1,9 @@
-package tokyo_go_sdk
+package main
 
 import (
 	"fmt"
 	"log"
 	"math"
-	"math/rand"
 	"net/url"
 	"os"
 	"os/signal"
@@ -13,12 +12,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func Test() {
+func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
 	addr := "tokyo.thuc.space"
-	u := url.URL{Scheme: "ws", Host: addr, Path: "/socket", RawQuery: "key=do_anh_bat_duoc_em&name=do_anh_bat_duoc_em"}
+	u := url.URL{Scheme: "ws", Host: addr, Path: "/socket", RawQuery: "key=chicken_killer&name=chicken_killer"}
 
 	fmt.Println("DEBUG: ", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
@@ -46,10 +45,10 @@ func Test() {
 		}
 	}()
 
-	ticker := time.NewTicker(time.Millisecond * 500)
+	ticker := time.NewTicker(time.Millisecond * 100)
 	defer ticker.Stop()
 	counter := 0
-	left := 1
+	radius := 0.0
 
 	for {
 		select {
@@ -60,31 +59,26 @@ func Test() {
 			// fire :=`{"e": "fire"}`
 			// throttle :=`{"e": "throttle", "data": 0.5}`
 
+			if radius > 2*math.Pi {
+				radius = 0
+			}
+
 			var message string
 			if counter == 0 {
-				// message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*2*math.Pi) + `}`
-				if left == 1 {
-					left = 0
-					message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*math.Pi+(math.Pi/2)) + `}`
-				} else {
-					left = 1
-					message = `{"e": "rotate", "data": ` + fmt.Sprint(rand.Float64()*math.Pi+(3*math.Pi/2)) + `}`
-				}
-			} else if counter == 1 {
-				message = `{"e": "fire"}`
+				radius += math.Pi / 48
+				message = `{"e": "rotate", "data": ` + fmt.Sprint(radius) + `}`
 			} else {
-				message = `{"e": "throttle", "data": ` + fmt.Sprint(float64(counter)*0.7) + `}`
+				message = `{"e": "fire"}`
 			}
-			// 			fmt.Println("Write: ", message)
+
 			err := c.WriteMessage(websocket.TextMessage, []byte(message))
 			if err != nil {
 				log.Println("write:", err)
 				return
 			}
-			if counter == 4 {
+			counter++
+			if counter == 2 {
 				counter = 0
-			} else {
-				counter++
 			}
 
 		case <-interrupt:

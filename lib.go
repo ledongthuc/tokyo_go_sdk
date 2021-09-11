@@ -32,13 +32,13 @@ func Test() {
 		i := 0
 		for {
 			defer close(done)
-			_, _, err := c.ReadMessage()
+			_, message, err := c.ReadMessage()
 			if err != nil {
 				log.Println("read:", err)
 				return
 			}
 			if i == 100 {
-				//	log.Printf("recv: %s", message)
+				log.Printf("recv: %s", message)
 				i = 0
 			} else {
 				i++

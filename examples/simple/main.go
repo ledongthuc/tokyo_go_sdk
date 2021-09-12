@@ -35,6 +35,9 @@ func main() {
 		defer ticker.Stop()
 		for {
 			_ = <-ticker.C
+			if !client.ConnReady {
+				continue
+			}
 			client.Rotate(rand.Float64() * 2 * math.Pi)
 			client.Throttle(1)
 			client.Fire()

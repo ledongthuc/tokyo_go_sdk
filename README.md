@@ -1,5 +1,7 @@
 # Go language tokyo-rs client SDK
 
+Go Client SDK to play with server https://github.com/unrealhoang/tokyo-rs
+
 ## Quick start
 
 Quick connect to tokyo-rs server

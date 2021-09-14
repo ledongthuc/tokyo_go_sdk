@@ -31,6 +31,7 @@ type Client struct {
 
 	// game state, feel free to access
 	CurrentPlayerID int64
+	CurrentPlayer   Player
 	CurrentGameInfo GameInfo
 	TeamNames       map[string]string // id - name
 }
@@ -163,10 +164,7 @@ func (c *Client) handleEvent(rawMessage []byte) {
 		if err := json.Unmarshal(rawMessage, &fullE); err != nil {
 			return
 		}
-		c.CurrentGameInfo = fullE.Data
-		if c.stateEventHandler != nil {
-			c.stateEventHandler(fullE)
-		}
+		c.handleStateEvent(fullE)
 	case EventTypeID:
 		var fullE CurrentUserIDEvent
 		if err := json.Unmarshal(rawMessage, &fullE); err != nil {
@@ -185,5 +183,21 @@ func (c *Client) handleEvent(rawMessage []byte) {
 		if c.stateEventHandler != nil {
 			c.teamNamesEventHandler(fullE)
 		}
+	}
+}
+
+func (c *Client) handleStateEvent(e StateEvent) {
+	c.CurrentGameInfo = e.Data
+	if c.CurrentPlayerID != 0 {
+		for _, player := range c.CurrentGameInfo.Players {
+			if player.ID == c.CurrentPlayerID {
+				c.CurrentPlayer = player
+				break
+			}
+		}
+	}
+
+	if c.stateEventHandler != nil {
+		c.stateEventHandler(e)
 	}
 }

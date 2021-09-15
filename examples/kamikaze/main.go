@@ -29,8 +29,9 @@ func main() {
 		//		log.Printf("Team names: %+v", e)
 	})
 	go func() {
-		ticker := time.NewTicker(time.Millisecond * 150)
+		ticker := time.NewTicker(time.Millisecond * 300)
 		defer ticker.Stop()
+		fireCounter := 0
 		for {
 			_ = <-ticker.C
 			if !client.ConnReady {
@@ -42,10 +43,14 @@ func main() {
 				continue
 			}
 			client.HeadToPoint(otherPlayer.X, otherPlayer.Y)
-			client.Throttle(1)
-			client.Fire()
-			client.Fire()
-			client.Fire()
+			if fireCounter == 0 {
+				client.Throttle(1)
+			}
+			fireCounter++
+			if fireCounter == 3 {
+				client.Fire()
+				fireCounter = 0
+			}
 		}
 	}()
 	log.Fatal(client.Listen())

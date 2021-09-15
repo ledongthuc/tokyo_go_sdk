@@ -99,7 +99,7 @@ func TestRadianBetweenPoint1ToPoint2(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			const float64EqualityThreshold = 1e-9
-			if got := RadianBetweenPoint1ToPoint2(tt.args.x1, tt.args.y1, tt.args.x2, tt.args.y2); math.Abs(got-tt.want) > float64EqualityThreshold {
+			if got := AngleBetweenPoint1ToPoint2(tt.args.x1, tt.args.y1, tt.args.x2, tt.args.y2); math.Abs(got-tt.want) > float64EqualityThreshold {
 				t.Errorf("RadianBetweenPoint1ToPoint2() = %v, want %v", got, tt.want)
 			}
 		})

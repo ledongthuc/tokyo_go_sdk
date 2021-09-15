@@ -4,15 +4,18 @@ import (
 	"math"
 )
 
+// DistanceBetweenTwoPoints return distance between 2 points
 func DistanceBetweenTwoPoints(x1, y1, x2, y2 float64) float64 {
 	return math.Sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 }
 
+// DistanceBetweenTwoPlayers return distance between 2 players
 func DistanceBetweenTwoPlayers(player1, player2 Player) float64 {
 	return DistanceBetweenTwoPoints(player1.X, player1.Y, player2.X, player2.Y)
 }
 
-func RadianBetweenPoint1ToPoint2(x1, y1, x2, y2 float64) float64 {
+// AngleBetweenPoint1ToPoint2 return radian angle between 2 points
+func AngleBetweenPoint1ToPoint2(x1, y1, x2, y2 float64) float64 {
 	var radianPadding float64
 	switch {
 
@@ -36,20 +39,21 @@ func RadianBetweenPoint1ToPoint2(x1, y1, x2, y2 float64) float64 {
 		radianPadding += math.Pi
 	case x2 > x1 && y2 < y1:
 		radianPadding += math.Pi * 3 / 2
-
 	}
 
-	hypotenuse := DistanceBetweenTwoPoints(x1, y1, x2, y2)
-	opposite := math.Abs(y2 - y1)
-	sin := opposite / hypotenuse
-	radians := math.Asin(sin)
+	adjacent := math.Abs(y2 - y1)
+	opposite := math.Abs(x2 - x1)
+	sin := opposite / adjacent
+	radians := math.Atan(sin)
 	return radians + radianPadding
 }
 
+// IsPlayersSamePosition check 2 player objects are same position
 func IsPlayersSamePosition(player1, player2 Player) bool {
 	return player1.X == player2.X && player1.Y == player2.Y
 }
 
+// IsSamePlayers check 2 players same ID
 func IsSamePlayers(player1, player2 Player) bool {
 	return player1.ID == player2.ID
 }

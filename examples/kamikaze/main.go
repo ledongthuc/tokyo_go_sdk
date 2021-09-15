@@ -37,9 +37,10 @@ func main() {
 			if !client.ConnReady {
 				continue
 			}
-			otherPlayer, err := client.GetFirstOtherPlayer()
+			otherPlayer, err := client.GetClosestPlayer()
 			if err != nil {
 				log.Printf("Error when finding user: %v", err)
+				client.Throttle(0)
 				continue
 			}
 			client.HeadToPoint(otherPlayer.X, otherPlayer.Y)

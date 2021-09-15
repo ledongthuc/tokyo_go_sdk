@@ -8,6 +8,10 @@ func DistanceBetweenTwoPoints(x1, y1, x2, y2 float64) float64 {
 	return math.Sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 }
 
+func DistanceBetweenTwoPlayers(player1, player2 Player) float64 {
+	return DistanceBetweenTwoPoints(player1.X, player1.Y, player2.X, player2.Y)
+}
+
 func RadianBetweenPoint1ToPoint2(x1, y1, x2, y2 float64) float64 {
 	var radianPadding float64
 	switch {

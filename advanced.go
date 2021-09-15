@@ -28,22 +28,22 @@ func (c *Client) GetFirstOtherPlayer() (Player, error) {
 	return Player{}, errors.New("Don't find anyone, only me")
 }
 
-func (c *Client) GetClosestPlayer() (Player, error) {
+func (c *Client) GetClosestPlayer() (Player, float64, error) {
 	others := c.GetOtherPlayers()
 
-	sortestDistance := math.MaxFloat64
+	shortestDistance := math.MaxFloat64
 	var closestPlayer *Player
 	for index := range others {
 		d := DistanceBetweenTwoPlayers(c.CurrentPlayer, others[index])
-		if d < sortestDistance {
+		if d < shortestDistance {
 			closestPlayer = &others[index]
-			sortestDistance = d
+			shortestDistance = d
 		}
 	}
 	if closestPlayer == nil {
-		return Player{}, errors.New("Don't find anyone, 0 player")
+		return Player{}, 0, errors.New("Don't find anyone, 0 player")
 	}
-	return *closestPlayer, nil
+	return *closestPlayer, shortestDistance, nil
 }
 
 func (c *Client) GetOtherPlayers() Players {

@@ -31,26 +31,21 @@ func main() {
 	go func() {
 		ticker := time.NewTicker(time.Millisecond * 300)
 		defer ticker.Stop()
-		fireCounter := 0
 		for {
 			_ = <-ticker.C
 			if !client.ConnReady {
 				continue
 			}
-			otherPlayer, err := client.GetClosestPlayer()
+			otherPlayer, distance, err := client.GetClosestPlayer()
 			if err != nil {
 				log.Printf("Error when finding user: %v", err)
 				client.Throttle(0)
 				continue
 			}
 			client.HeadToPoint(otherPlayer.X, otherPlayer.Y)
-			if fireCounter == 0 {
-				client.Throttle(1)
-			}
-			fireCounter++
-			if fireCounter == 3 {
+			client.Throttle(1)
+			if distance < 700 {
 				client.Fire()
-				fireCounter = 0
 			}
 		}
 	}()

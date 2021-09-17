@@ -5,9 +5,11 @@ import (
 	"math"
 )
 
+const targetOffset = 1.5
+
 // Head current player to a points
 func (c *Client) HeadToPoint(x, y float64) error {
-	radian := AngleBetweenPoint1ToPoint2(c.CurrentPlayer.X, c.CurrentPlayer.Y, x, y)
+	radian := CalculateAngleFromPoint1ToPoint2(c.CurrentPlayer.X, c.CurrentPlayer.Y, x, y)
 	return c.Rotate(radian)
 }
 
@@ -64,6 +66,29 @@ func (c *Client) GetOtherPlayers() Players {
 	return others
 }
 
+// AnyPlayersToMe check if any players move to me
+func (c *Client) AnyPlayersToMe(inRange float64) (float64, bool) {
+	players := c.GetOtherPlayers()
+	if len(players) == 0 {
+		return 0, false
+	}
+
+	for _, player := range players {
+		d := DistanceBetweenTwoPlayers(c.CurrentPlayer, player)
+		if inRange < d {
+			continue
+		}
+		// bullet
+		angle := AngleBetweenPoint1ToPoint2(player.X, player.Y, c.CurrentPlayer.X, c.CurrentPlayer.Y)
+		if angle > targetOffset {
+			continue
+		}
+		return player.Angle + (math.Pi / 5), true
+	}
+
+	return 0, false
+}
+
 // IsDeadPlayer check if a player is dead
 func (c *Client) IsDeadPlayer(player Player) bool {
 	for _, aDead := range c.CurrentGameInfo.Dead {
@@ -72,4 +97,38 @@ func (c *Client) IsDeadPlayer(player Player) bool {
 		}
 	}
 	return false
+}
+
+// AnyBulletToMe check if any bullets are fired to me
+func (c *Client) AnyBulletToMe(inRange float64) (float64, bool) {
+	bullets := c.GetOtherBullets()
+	if len(bullets) == 0 {
+		return 0, false
+	}
+
+	for _, bullet := range bullets {
+		d := DistanceBetweenTwoPoints(c.CurrentPlayer.X, c.CurrentPlayer.Y, bullet.X, bullet.Y)
+		if inRange < d {
+			continue
+		}
+		// bullet
+		angle := AngleBetweenPoint1ToPoint2(bullet.X, bullet.Y, c.CurrentPlayer.X, c.CurrentPlayer.Y)
+		if angle > targetOffset {
+			continue
+		}
+		return bullet.Angle + (math.Pi / 5), true
+	}
+
+	return 0, false
+}
+
+func (c *Client) GetOtherBullets() Bullets {
+	var others Bullets
+	for _, bullet := range c.CurrentGameInfo.Bullets {
+		if bullet.PlayerID == c.CurrentPlayer.ID {
+			continue
+		}
+		others = append(others, bullet)
+	}
+	return others
 }

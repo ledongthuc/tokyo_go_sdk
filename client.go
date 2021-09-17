@@ -30,7 +30,7 @@ type Client struct {
 	teamNamesEventHandler     func(TeamNamesEvent)
 
 	// game state, feel free to access
-	CurrentPlayerID int64
+	CurrentPlayerID *int64
 	CurrentPlayer   Player
 	CurrentGameInfo GameInfo
 	TeamNames       map[string]string // id - name
@@ -170,7 +170,7 @@ func (c *Client) handleEvent(rawMessage []byte) {
 		if err := json.Unmarshal(rawMessage, &fullE); err != nil {
 			return
 		}
-		c.CurrentPlayerID = fullE.Data
+		c.CurrentPlayerID = &fullE.Data
 		if c.stateEventHandler != nil {
 			c.currentUserIDEventHandler(fullE)
 		}
@@ -188,9 +188,9 @@ func (c *Client) handleEvent(rawMessage []byte) {
 
 func (c *Client) handleStateEvent(e StateEvent) {
 	c.CurrentGameInfo = e.Data
-	if c.CurrentPlayerID != 0 {
+	if c.CurrentPlayerID != nil {
 		for _, player := range c.CurrentGameInfo.Players {
-			if player.ID == c.CurrentPlayerID {
+			if player.ID == *c.CurrentPlayerID {
 				c.CurrentPlayer = player
 				break
 			}
